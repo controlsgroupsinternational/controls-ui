@@ -1,0 +1,351 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+ 
+@layer base {
+  :root {
+    --background: #ebf0f2;
+    --background-stepper: #deedf6;
+    --background-scroll: 240deg 3.05% 16.21%;
+    --background-hover: 240deg 3.05% 16.21%;
+    --background-sidebar: var(--secondary);
+
+    --text-color: 240 10% 3.9%;
+
+    --foreground: 240 10% 3.9%;
+
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+
+    --border: 240 5.9% 90%;
+    --input: 215, 16%, 47%;
+
+    --primary: #38789b;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: #568aaf;
+    --secondary-foreground: 240 5.9% 10%;
+
+    /* brand */
+    --primary-brand-text: 0deg 3% 97%;
+    --primary-brand: #38789b;
+    --primary-brand-lighter: #38789b;
+    --primary-brand-opaque: 205deg 51% 40%;
+    --text-primary-foreground: white;
+
+    --secondary-brand: #568aaf;
+    --secondary-brand-opaque: 226deg 50% 35%;
+
+    --sidebar-background: #38789be6;
+    --sidebar-text: white;
+    --sidebar-text-accent: var(--primary);
+    --sidebar-icons-hover: var(--primary);
+
+    /**/
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --ring: 215, 16%, 47%;
+
+    --radius: 0.5rem;
+
+    --background-gradient: linear-gradient(155deg, rgba(56, 120, 155, 1) 0%, rgba(104, 147, 178, 1) 35%);
+  }
+
+  .dark {
+    --background: hsla(240, 4%, 14%, 0.833);
+
+    --background-stepper: #84bbddf5;
+    --background-hover: 240deg 3.05% 16.21%;
+    --background-scroll: 240deg 3.05% 16.21%;
+    --background-sidebar: var(--background);
+
+    --text-color: 200, 33%, 96%;
+
+    --foreground: 0 0% 98%;
+
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+
+    --primary: #2e7da8;
+    --primary-foreground: white;
+
+    --secondary: #346b93;
+    --secondary-foreground: 0 0% 98%;
+
+    /* brand */
+    --primary-brand-text: 0deg 3% 97%;
+    --primary-brand: #2a7299;
+    --primary-brand-lighter: #2a7299;
+    --primary-brand-opaque: 205deg 51% 40%;
+    --text-primary-foreground: white;
+    --secondary-brand: #346b93;
+    --secondary-brand-opaque: 226deg 50% 35%;
+
+    --sidebar-background: #346b93f5;
+    --sidebar-text: white;
+    --sidebar-text-accent: var(--primary);
+    --sidebar-icons-hover: var(--primary);
+
+    /**/
+
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 85.7% 97.3%;
+
+    --ring: 240 3.7% 15.9%;
+
+    --background-gradient: linear-gradient(155deg, rgba(56, 120, 155, 1) 0%, rgba(104, 147, 178, 1) 35%);
+  }
+}
+
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+
+/* SIDEBAR */
+.sidebar {
+  position: sticky;
+  height: 100vh;
+  width: 100%;
+  top: 0px;
+  left: 0px;
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+  z-index: 10;
+  border-radius: 0px 12px 12px 0px;
+  background: hsl(var(--background-sidebar));
+}
+
+/* reset css data-radix */
+.sidebar div[data-radix-scroll-area-viewport] > div {
+  height: 100%;
+  display: contents !important;
+}
+
+.sidebar .scroll-content {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+}
+
+.sidebar .scroll-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sidebar .scroll-content::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 100px;
+}
+
+.sidebar .scroll-content::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--background-scroll));
+  border-radius: 100px;
+}
+
+/* LAYOUTS */
+
+.app-layout {
+  display: flex;
+  height: 100%;
+  position: relative;
+  grid-area: content / content / content / content;
+  @apply px-10;
+}
+
+.app-layout > div {
+  width: 100%;
+}
+
+/* LOADERS */
+
+.loader-fade-dot {
+  width: 48px;
+  height: 48px;
+  background: #FFF;
+  display: inline-block;
+  border-radius: 50%;
+  box-sizing: border-box;
+  animation: animloader 1s ease-in infinite;
+}
+
+@keyframes animloader {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+.spinner {
+  border: 3px solid white;
+  border-left-color: transparent;
+  border-radius: 999px;
+  animation: spin 1s linear infinite;
+}
+
+.dark .spinner {
+  border: 3px solid black;
+  border-left-color: transparent;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Dots Loader */
+.dot-flashing {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #9880ff;
+  color: #9880ff;
+  animation: dot-flashing 1s infinite linear alternate;
+  animation-delay: 0.5s;
+}
+.dot-flashing::before, .dot-flashing::after {
+  content: "";
+  display: inline-block;
+  position: absolute;
+  top: 0;
+}
+.dot-flashing::before {
+  left: -15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #9880ff;
+  color: #9880ff;
+  animation: dot-flashing 1s infinite alternate;
+  animation-delay: 0s;
+}
+.dot-flashing::after {
+  left: 15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #9880ff;
+  color: #9880ff;
+  animation: dot-flashing 1s infinite alternate;
+  animation-delay: 1s;
+}
+
+@keyframes dot-flashing {
+  0% {
+    background-color: #9880ff;
+  }
+  50%, 100% {
+    background-color: rgba(152, 128, 255, 0.2);
+  }
+}
+
+/* Code Verification Input */
+/* Code Input */
+code {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+}
+
+.pin-field-container {
+  display: grid;
+  grid-auto-columns: max-content;
+  grid-auto-flow: column;
+  justify-content: center;
+}
+
+.pin-field {
+  border: 1px solid #d3d3d3;
+  border-right: none;
+  font-size: 2rem;
+  height: 4rem;
+  outline: none;
+  text-align: center;
+  transition-duration: 250ms;
+  transition-property: color, border, box-shadow, transform;
+  width: 4rem;
+}
+.pin-field:disabled {
+  @apply text-muted-foreground;
+}
+.pin-field:first-of-type {
+  border-radius: 0.5rem 0 0 0.5rem;
+}
+.pin-field:last-of-type {
+  border-radius: 0 0.5rem 0.5rem 0;
+  border-right: 1px solid #d3d3d3;
+}
+.pin-field:focus {
+  border-color: #686de0;
+  box-shadow: 0 0 0.25rem rgba(104, 109, 224, 0.5);
+  outline: none;
+}
+.pin-field:focus + .pin-field {
+  border-left-color: #686de0;
+}
+.pin-field:invalid {
+  animation: shake 5 linear 75ms;
+  border-color: #dc3545;
+  box-shadow: 0 0 0.25rem rgba(220, 53, 69, 0.5);
+}
+.pin-field:invalid + .pin-field {
+  border-left-color: #dc3545;
+}
+.pin-field.complete {
+  border-color: #6ab04c;
+  color: #6ab04c;
+}
+.pin-field.complete[disabled] {
+  background: rgba(106, 176, 76, 0.1);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.pin-field.complete + .pin-field {
+  border-left-color: #6ab04c;
+}
+
+@keyframes shake {
+  from {
+    transform: translateY(-5%);
+  }
+  to {
+    transform: translateY(5%);
+  }
+}
