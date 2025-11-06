@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IconSearch } from "@tabler/icons-react";
@@ -6,10 +6,11 @@ import { useContext, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Button, camelToSnake, Form, Spinner } from "../../";
+import { Button, camelToSnake, Form, Spinner } from "../..";
 import { TableToolbar } from "./Toolbar";
 import { TableContext } from "./store";
 import { ITableSubmit } from "./types";
+import { parseURLSearchParams } from "./utils";
 
 interface TableSearchProps {
   onSubmitTable: ITableSubmit;
@@ -23,7 +24,7 @@ export const TableSearch = ({ onSubmitTable, loading }: TableSearchProps) => {
     filters,
     pagination: { page, limit },
     setSearchForm,
-    isFormatedUpperQueries
+    isFormatedUpperQueries,
   } = useContext(TableContext);
 
   const form = useForm<any>({
@@ -43,7 +44,6 @@ export const TableSearch = ({ onSubmitTable, loading }: TableSearchProps) => {
   });
 
   const onSubmit = async (data) => {
-    console.log({ data });
     const filtersSelected = getFiltersWithOptionsSelected();
 
     const queries = [];
@@ -57,9 +57,21 @@ export const TableSearch = ({ onSubmitTable, loading }: TableSearchProps) => {
       });
     });
 
-    console.log("queries formatted ", queries);
-    onSubmitTable({ queries, filters: filtersSelected, limit, page });
+    onSubmitTable({ queries, filters: filtersSelected, limit, page: 1 });
   };
+
+  useEffect(() => {
+    const queriesFromUrl = {};
+    const searchQuery = parseURLSearchParams();
+
+    searchQuery.queries.forEach((item) => {
+      if (item.field && item.text) {
+        queriesFromUrl[item.field] = item.text;
+      }
+    });
+
+    form.reset(queriesFromUrl);
+  }, []);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => setSearchForm(form), [form]);
@@ -76,6 +88,8 @@ export const TableSearch = ({ onSubmitTable, loading }: TableSearchProps) => {
         ) : (
           <div></div>
         )}
+
+        
 
         <div className="w-fit flex flex-col gap-y-2">
           <Button

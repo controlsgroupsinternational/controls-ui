@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 import { UseFormReturn } from "react-hook-form";
@@ -17,6 +17,14 @@ export interface ITableFilter {
   icon?: ReactNode;
   options: ITableFilterOption[];
 }
+
+export type PageQueries = {
+  filters?: Record<string, string | boolean | unknown[]>;
+  queries?: { field: string; text: string }[];
+  page?: number;
+  perPage?: number;
+  requestOriginPath?: string;
+};
 
 type IDataProperty<Type> = {
   [Property in keyof Type as Exclude<Property, "__typename">]: Type[Property];
@@ -51,6 +59,7 @@ export interface ITablePagination {
   page: number;
   hasPrevPage: boolean;
   hasNextPage: boolean;
+  pagesCount: number;
 }
 
 export interface ITableSubmitParams {
@@ -60,12 +69,19 @@ export interface ITableSubmitParams {
   page: number;
 }
 
+export interface ITableQueries {
+  queries: { text: string; field: string }[];
+  filters: ITableFilter[];
+  limit?: number;
+  page: number;
+}
+
 export type ITableSubmit = ({
   page,
   limit,
   queries,
   filters,
-}: ITableSubmitParams) => Promise<void>;
+}: ITableQueries) => Promise<void>;
 
 export interface IInitialTable<TData = any> {
   data: TData[] | [];
@@ -82,7 +98,7 @@ export interface IInitialTable<TData = any> {
   selectOptionFilter: (
     filterId: string,
     optionId: string,
-    optionValue: boolean
+    optionValue: boolean,
   ) => void;
   resetOptionsByFilter: (filterId: string) => void;
   getFiltersWithOptionsSelected: () => any[];
@@ -108,7 +124,7 @@ export interface ITableStore<TData> {
   selectOptionFilter: (
     filterId: string,
     optionId: string,
-    optionValue: boolean
+    optionValue: boolean,
   ) => void;
   getFiltersWithOptionsSelected: () => any[];
   getFilterOptionsSelectedById: (filterId: string) => any[];
@@ -152,7 +168,7 @@ export interface ITableContextStore<TData = any> {
   selectOptionFilter: (
     filterId: string,
     optionId: string,
-    optionValue: boolean
+    optionValue: boolean,
   ) => void;
   getFiltersWithOptionsSelected: () => any[];
   getFilterOptionsSelectedById: (filterId: string) => any[];
@@ -162,4 +178,8 @@ export interface ITableContextStore<TData = any> {
   prevPage: () => void;
   resetPage: () => void;
   updateLimit: (limit: number, page?: number) => void;
+  onSelectAllItems?: (value: boolean, isOnlyUpdateValue?: boolean) => void;
+  isSelectedAllItems?: boolean;
+  setIsMultiSelect: Dispatch<SetStateAction<boolean>>;
+  isMultiSelect: boolean;
 }

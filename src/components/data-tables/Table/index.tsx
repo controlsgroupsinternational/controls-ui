@@ -1,12 +1,12 @@
-'use client'
+"use client";
 
 import type {
   ITablePagination,
   ITableColumn,
   ITableFilter,
   ITableSubmit,
-  ITableSubmitParams,
   ITableDynamicFilter,
+  ITableQueries,
 } from "./types";
 import {
   Dispatch,
@@ -24,7 +24,13 @@ import { TableLoading } from "./Loading";
 import { TableSearch } from "./Search";
 import { TableError } from "./Error";
 import { TableEmpty } from "./Empty";
-import { camelToSnake } from "./utils";
+import {
+  camelToSnake,
+  newFiltersBasedInUrlSearch,
+  parseURLSearchParams,
+  updateIsSelectAllInUrl,
+  updateSearchInUrl,
+} from "./utils";
 
 interface CustomTableProps<DataSchema> {
   data: DataSchema[];
@@ -39,6 +45,8 @@ interface CustomTableProps<DataSchema> {
   setMultiItemsSelected?: Dispatch<SetStateAction<any[]>>;
   multiItemsSelected?: any[];
   isFormatedUpperQueries?: boolean;
+  onSelectAllItems?: (value: boolean) => void;
+  isSelectedAllItems?: boolean;
 }
 
 const initialPagination: ITablePagination = {
@@ -47,6 +55,7 @@ const initialPagination: ITablePagination = {
   labels: { plural: "Items", single: "Item" },
   hasPrevPage: false,
   hasNextPage: false,
+  pagesCount: 0,
 };
 
 export function D4TTable<DataSchema>(props: CustomTableProps<DataSchema>) {
@@ -63,9 +72,14 @@ export function D4TTable<DataSchema>(props: CustomTableProps<DataSchema>) {
   const [localColumns, setLocalColumns] = useState<ITableColumn<DataSchema>[]>(
     props?.columns || []
   );
+  const [isMultiSelect, setIsMultiSelect] = useState(false);
+  const [isSelectedAllItems, setIsSelectedAllItems] = useState(false);
 
   const handleSubmit = useCallback(
-    (params: ITableSubmitParams) => props.onSubmitTable({ ...params }),
+    (params: ITableQueries) => {
+      updateSearchInUrl(params);
+      return props.onSubmitTable({ ...params });
+    },
     [props]
   );
 
@@ -81,7 +95,9 @@ export function D4TTable<DataSchema>(props: CustomTableProps<DataSchema>) {
         if (!query[1]) return;
 
         queries.push({
-          field: !props.isFormatedUpperQueries ? camelToSnake(query[0]) : query[0],
+          field: !props?.isFormatedUpperQueries
+            ? camelToSnake(query[0])
+            : query[0],
           text: query[1],
         });
       });
@@ -184,11 +200,12 @@ export function D4TTable<DataSchema>(props: CustomTableProps<DataSchema>) {
     setLocalFilters(filtersReseted);
   };
 
-  const updateLimit = (limit, page?: number) => updatePagination({ 
-    ...pagination, 
-    limit ,
-    page: page || pagination?.page
-  });
+  const updateLimit = (limit, page?: number) =>
+    updatePagination({
+      ...pagination,
+      limit,
+      page: page || pagination?.page,
+    });
 
   const resetFilters = () => {
     const filtersReseted = localFilters.map((filter) => ({
@@ -199,11 +216,55 @@ export function D4TTable<DataSchema>(props: CustomTableProps<DataSchema>) {
     setLocalFilters(filtersReseted);
   };
 
+  const handleOnSelectAllItems = (isChecked, isOnlyUpdateValue = false) => {
+    if (isOnlyUpdateValue) {
+      setIsSelectedAllItems(isChecked);
+      props?.onSelectAllItems && props?.onSelectAllItems(isChecked);
+      updateIsSelectAllInUrl(isChecked);
+      return;
+    }
+
+    if (isChecked) {
+      const selectedAllItems = props?.data?.map((item) => ({
+        ...item,
+        isSelected: isChecked,
+      }));
+      props?.setMultiItemsSelected(selectedAllItems);
+    } else {
+      props?.setMultiItemsSelected([]);
+    }
+
+    setIsSelectedAllItems(isChecked);
+    props?.onSelectAllItems && props?.onSelectAllItems(isChecked);
+    updateIsSelectAllInUrl(isChecked);
+  };
+
   useEffect(() => setLocalData(props?.data || []), [props?.data]);
   useEffect(() => setLocalLoading(props?.loading), [props?.loading]);
   useEffect(() => setLocalError(props?.error || false), [props?.error]);
   useEffect(() => setPagination(props?.pagination), [props?.pagination]);
-  useEffect(() => setLocalColumns(props?.columns || []), [props?.columns]);
+  useEffect(() => {
+    const columnToMultiSelect: ITableColumn<DataSchema> = {
+      id: "multi-select",
+      label: "",
+    };
+
+    if (
+      props?.setMultiItemsSelected &&
+      props?.multiItemsSelected &&
+      props?.columns
+    ) {
+      setIsMultiSelect(true);
+      setLocalColumns([columnToMultiSelect, ...props?.columns]);
+    } else {
+      setLocalColumns(props?.columns || []);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (props?.isSelectedAllItems && props?.data?.length)
+      handleOnSelectAllItems(props?.isSelectedAllItems);
+  }, [props?.isSelectedAllItems, props?.data]);
 
   // Extract Queries
   useEffect(() => {
@@ -238,7 +299,18 @@ export function D4TTable<DataSchema>(props: CustomTableProps<DataSchema>) {
         return toReturn;
       });
 
-    setLocalFilters(filters);
+    // Agregar valores por default to filters in ui
+    const searchQuery = parseURLSearchParams();
+
+    const newFilters = newFiltersBasedInUrlSearch(searchQuery, filters);
+
+    const thereAreFiltersSelected = newFilters.some(({ options }) => {
+      return options.some(({ selected }) => selected);
+    });
+
+    setShowFilters(thereAreFiltersSelected);
+
+    setLocalFilters(newFilters);
   }, [localColumns]);
 
   // Extract Dynamic Filters
@@ -281,6 +353,12 @@ export function D4TTable<DataSchema>(props: CustomTableProps<DataSchema>) {
     }));
   }, [props.pagination.hasNextPage, props.pagination.hasPrevPage]);
 
+  useEffect(() => {
+    const searchQuery = parseURLSearchParams();
+
+    setIsSelectedAllItems(searchQuery?.isSelectedAll);
+  }, []);
+
   return (
     <TableContext.Provider
       value={{
@@ -291,24 +369,28 @@ export function D4TTable<DataSchema>(props: CustomTableProps<DataSchema>) {
         prevPage,
         resetPage,
         searchForm,
-        isFormatedUpperQueries: props.isFormatedUpperQueries,
+        isFormatedUpperQueries: props?.isFormatedUpperQueries,
         updateLimit,
         showFilters,
         resetFilters,
         getGlobalFilters,
         selectOptionFilter,
         resetOptionsByFilter,
-        multiItemsSelected: props.multiItemsSelected,
-        setMultiItemsSelected: props.setMultiItemsSelected,
-        limitOfMultiSelect: props.limitOfMultiSelect,
+        multiItemsSelected: props?.multiItemsSelected,
+        setMultiItemsSelected: props?.setMultiItemsSelected,
+        limitOfMultiSelect: props?.limitOfMultiSelect,
         queries: localQueries,
         filters: localFilters,
         onSubmitTable: handleSubmit,
         getFilterOptionsSelectedById,
         getFiltersWithOptionsSelected,
-        setSelectItem: props.setSelectItem,
+        setSelectItem: props?.setSelectItem,
         setShowFilters: (value) => setShowFilters(value),
         setSearchForm: (searchForm) => setSearchForm(searchForm),
+        onSelectAllItems: handleOnSelectAllItems,
+        isSelectedAllItems,
+        setIsMultiSelect,
+        isMultiSelect,
       }}
     >
       <div className="w-full h-fit space-y-4">

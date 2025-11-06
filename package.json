@@ -1,7 +1,7 @@
 {
-  "name": "d4t-ui-demo",
+  "name": "@controls-groups/ui",
   "private": false,
-  "version": "1.16.12",
+  "version": "1.0.0",
   "type": "module",
   "main": "dist/index.umd.js",
   "module": "dist/index.es.js",

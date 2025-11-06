@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { Dispatch, SetStateAction, useContext, useState } from "react";
 import { IconClick } from "@tabler/icons-react";
@@ -24,6 +24,8 @@ interface TableBodyRowProps {
   limitOfMultiSelect: number;
   setItemsSelectedCount: Dispatch<SetStateAction<number>>;
   itemsSelectedCount: number;
+  isSelectedAllItems: boolean;
+  onSelectAllItems: (value: boolean, isOnlyUpdateValue?: boolean) => void;
 }
 
 const TableBodyEmpty = ({ colSpan }: { colSpan: number }) => {
@@ -44,31 +46,32 @@ const TableBodyRow = ({
   multiItemsSelected,
   limitOfMultiSelect,
   itemsSelectedCount,
-  setItemsSelectedCount
+  setItemsSelectedCount,
+  isSelectedAllItems,
+  onSelectAllItems,
 }: TableBodyRowProps) => {
   const renderCell = (
     column: ITableColumn<any>,
-    item: Record<string, string>
+    item: Record<string, string>,
   ) => {
     //=========== Refactor this after
     const verficationOfItems = () => {
       // Verify if the item is already selected
-      const isSelected = multiItemsSelected ? multiItemsSelected.some(
-        (selectedItem) => selectedItem.id === item.id
-      ) : false;
-
-      if (multiItemsSelected.length === limitOfMultiSelect && !isSelected) {
-        console.log("NO puedes seleccionar más elementos.");
-        return;
-      }
+      const isSelected = multiItemsSelected
+        ? multiItemsSelected.some((selectedItem) => selectedItem.id === item.id)
+        : false;
 
       if (isSelected) {
         // If already selected, unmark it and remove it from the array
         const updatedItems = multiItemsSelected.filter(
-          (selectedItem) => selectedItem.id !== item.id
+          (selectedItem) => selectedItem.id !== item.id,
         );
         setMultiItemsSelected(updatedItems);
         setItemsSelectedCount(itemsSelectedCount - 1);
+
+        if (isSelectedAllItems) {
+          onSelectAllItems(false, true);
+        }
       } else {
         // If not selected and not reached the limit, mark it and add it to the array
         const updatedItems = [
@@ -102,10 +105,16 @@ const TableBodyRow = ({
       return (
         <Checkbox
           className="border-slate-500 data-[state=checked]:bg-brand-primary-lighter"
-          onClick={() => { multiItemsSelected ? verficationOfItems() : null }}
-          checked={multiItemsSelected ? multiItemsSelected.some(
-            (selectedItem) => selectedItem.id === item.id
-          ) : false}
+          onClick={() => {
+            multiItemsSelected ? verficationOfItems() : null;
+          }}
+          checked={
+            multiItemsSelected
+              ? multiItemsSelected.some(
+                  (selectedItem) => selectedItem.id === item.id,
+                )
+              : false
+          }
           disabled={
             itemsSelectedCount === limitOfMultiSelect && !itemsSelectedCount
           }
@@ -139,13 +148,15 @@ export const TableBody = () => {
     setMultiItemsSelected,
     multiItemsSelected,
     limitOfMultiSelect,
+    isSelectedAllItems,
+    onSelectAllItems,
   } = useContext(TableContext);
   const [itemsSelectedCount, setItemsSelectedCount] = useState<number>(
-    multiItemsSelected ? multiItemsSelected.length : 0
+    multiItemsSelected ? multiItemsSelected.length : 0,
   );
 
   return (
-    <TableBodyUI className='bg-card'>
+    <TableBodyUI className="bg-card">
       {data.length ? (
         <TableBodyRow
           setMultiItemsSelected={setMultiItemsSelected}
@@ -156,6 +167,8 @@ export const TableBody = () => {
           multiItemsSelected={multiItemsSelected}
           columns={columns}
           limitOfMultiSelect={limitOfMultiSelect}
+          isSelectedAllItems={isSelectedAllItems}
+          onSelectAllItems={onSelectAllItems}
         />
       ) : (
         <TableBodyEmpty colSpan={columns.length} />

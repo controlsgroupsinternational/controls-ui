@@ -1,5 +1,5 @@
 // @ts-nocheck
-'use client'
+"use client";
 
 import { createContext } from "react";
 
@@ -15,12 +15,12 @@ export const TableContext = createContext<ITableContextStore>({
   searchForm: null,
   multiSelectedItems: [],
   limitOfMultiSelect: 0,
-  setMultiItemsSelected: () => { },
+  setMultiItemsSelected: () => {},
   onSubmitTable: null,
-  setSearchForm: () => { },
-  setSelectItem: () => { },
-  getGlobalFilters: () => { },
-  resetOptionsByFilter: () => { },
+  setSearchForm: () => {},
+  setSelectItem: () => {},
+  getGlobalFilters: () => {},
+  resetOptionsByFilter: () => {},
   pagination: {
     limit: 5,
     page: 1,
@@ -28,4 +28,6 @@ export const TableContext = createContext<ITableContextStore>({
     hasPrevPage: false,
     hasNextPage: false,
   },
+  onSelectAllItems: undefined,
+  isSelectedAllItems: false,
 });

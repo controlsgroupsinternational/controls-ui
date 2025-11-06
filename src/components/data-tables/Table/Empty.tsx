@@ -1,9 +1,9 @@
-'use client'
+"use client";
 
-import { TableUI } from '../../table'
+import { TableUI } from "../../table";
 
-import { TableHeader } from './Header'
-import { TableBody } from './Body'
+import { TableHeader } from "./Header";
+import { TableBody } from "./Body";
 
 export const TableEmpty = () => {
   return (
@@ -11,5 +11,5 @@ export const TableEmpty = () => {
       <TableHeader />
       <TableBody />
     </TableUI>
-  )
-}
+  );
+};
