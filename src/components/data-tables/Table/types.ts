@@ -59,7 +59,7 @@ export interface ITablePagination {
   page: number;
   hasPrevPage: boolean;
   hasNextPage: boolean;
-  pagesCount: number;
+  pagesCount?: number;
 }
 
 export interface ITableSubmitParams {
