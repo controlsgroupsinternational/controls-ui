@@ -283,21 +283,36 @@ export function D4TTable<DataSchema>(props: CustomTableProps<DataSchema>) {
     const filterFiltersExist = (columnToFilter) =>
       columnToFilter?.filters && columnToFilter?.filters.length;
 
-    const filters: ITableFilter[] = localColumns
-      .filter(filterFiltersExist)
-      .map((filter) => {
-        const filterOptions = filter.filters.map((filterOption) => ({
-          ...filterOption,
-          selected: false,
-        }));
-        const toReturn: ITableFilter = {
-          ...filter,
-          id: filter.id as string,
-          options: filterOptions,
-        };
+    const mergeFiltersWithColumns = localColumns
+      .map((column) => {
+        const currentFilters = props?.filters?.find(
+          (filter) => filter.id === column.id
+        );
+        if (currentFilters) {
+          return {
+            id: column.id,
+            label: column.label,
+            filters: currentFilters.filters,
+          };
+        }
 
-        return toReturn;
-      });
+        return column;
+      })
+      .filter(filterFiltersExist);
+
+    const filters: ITableFilter[] = mergeFiltersWithColumns.map((filter) => {
+      const filterOptions = filter.filters.map((filterOption) => ({
+        ...filterOption,
+        selected: false,
+      }));
+      const toReturn: ITableFilter = {
+        ...filter,
+        id: filter.id as string,
+        options: filterOptions,
+      };
+
+      return toReturn;
+    });
 
     // Agregar valores por default to filters in ui
     const searchQuery = parseURLSearchParams();
@@ -311,38 +326,6 @@ export function D4TTable<DataSchema>(props: CustomTableProps<DataSchema>) {
     setShowFilters(thereAreFiltersSelected);
 
     setLocalFilters(newFilters);
-  }, [localColumns]);
-
-  // Extract Dynamic Filters
-  useEffect(() => {
-    if (!props?.filters) {
-      return;
-    }
-
-    props?.filters.forEach((filter) => {
-      if (!filter?.filters) return;
-
-      localColumns.forEach((column) => {
-        if (filter.id === column.id) {
-          setLocalFilters((prevState) => {
-            const exist = prevState.some((item) => item.id === filter.id);
-
-            if (exist) {
-              return prevState;
-            }
-
-            return [
-              ...prevState,
-              {
-                id: column.id,
-                label: column.label,
-                options: filter.filters,
-              },
-            ];
-          });
-        }
-      });
-    });
   }, [localColumns, props?.filters]);
 
   useEffect(() => {
