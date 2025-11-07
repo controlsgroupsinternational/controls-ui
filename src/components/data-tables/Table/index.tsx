@@ -25,7 +25,6 @@ import { TableSearch } from "./Search";
 import { TableError } from "./Error";
 import { TableEmpty } from "./Empty";
 import {
-  camelToSnake,
   newFiltersBasedInUrlSearch,
   parseURLSearchParams,
   updateIsSelectAllInUrl,
@@ -44,7 +43,6 @@ interface CustomTableProps<DataSchema> {
   limitOfMultiSelect?: number;
   setMultiItemsSelected?: Dispatch<SetStateAction<any[]>>;
   multiItemsSelected?: any[];
-  isFormatedUpperQueries?: boolean;
   onSelectAllItems?: (value: boolean) => void;
   isSelectedAllItems?: boolean;
 }
@@ -58,7 +56,7 @@ const initialPagination: ITablePagination = {
   pagesCount: 0,
 };
 
-export function D4TTable<DataSchema>(props: CustomTableProps<DataSchema>) {
+export function Table<DataSchema>(props: CustomTableProps<DataSchema>) {
   const [localData, setLocalData] = useState([]);
   const [localFilters, setLocalFilters] = useState([]);
   const [localQueries, setLocalQueries] = useState([]);
@@ -95,9 +93,7 @@ export function D4TTable<DataSchema>(props: CustomTableProps<DataSchema>) {
         if (!query[1]) return;
 
         queries.push({
-          field: !props?.isFormatedUpperQueries
-            ? camelToSnake(query[0])
-            : query[0],
+          field: query[0],
           text: query[1],
         });
       });
@@ -352,7 +348,6 @@ export function D4TTable<DataSchema>(props: CustomTableProps<DataSchema>) {
         prevPage,
         resetPage,
         searchForm,
-        isFormatedUpperQueries: props?.isFormatedUpperQueries,
         updateLimit,
         showFilters,
         resetFilters,

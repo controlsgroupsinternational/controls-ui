@@ -10,7 +10,6 @@ export const TableContext = createContext<ITableContextStore>({
   filters: [],
   queries: [],
   columns: [],
-  isFormatedUpperQueries: true,
   showFilters: true,
   searchForm: null,
   multiSelectedItems: [],

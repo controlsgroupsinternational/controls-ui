@@ -61,19 +61,8 @@ export const insertColumn = (
   ];
 };
 
-export function updateSearchInUrl(params: ITableQueries) {
-  const searchParams = new URLSearchParams(window.location.search);
-
-  searchParams.forEach((_, key) => {
-    if (
-      key.startsWith("queries") ||
-      key.startsWith("filters") ||
-      key === "perPage" ||
-      key === "page"
-    ) {
-      searchParams.delete(key);
-    }
-  });
+export function updateSearchInUrl(params: Partial<ITableQueries>) {
+  const searchParams = new URLSearchParams();
 
   // Procesar queries
   if (params.queries) {
