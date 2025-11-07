@@ -129,6 +129,9 @@ export function updateSearchInUrl(params: ITableQueries) {
 
 interface IReturnParseURLSearchParams extends PageQueries {
   isSelectedAll?: boolean;
+  limit: number;
+  page: number;
+  perPage: number;
 }
 
 export const parseURLSearchParams: () => IReturnParseURLSearchParams = () => {

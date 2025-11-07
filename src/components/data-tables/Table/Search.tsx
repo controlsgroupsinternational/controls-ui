@@ -22,9 +22,8 @@ export const TableSearch = ({ onSubmitTable, loading }: TableSearchProps) => {
     queries,
     getFiltersWithOptionsSelected,
     filters,
-    pagination: { page, limit },
+    pagination: { limit },
     setSearchForm,
-    isFormatedUpperQueries,
   } = useContext(TableContext);
 
   const form = useForm<any>({
@@ -38,8 +37,8 @@ export const TableSearch = ({ onSubmitTable, loading }: TableSearchProps) => {
         queries.reduce((obj, item) => {
           obj[item.id] = z.string().optional();
           return obj;
-        }, {}),
-      ),
+        }, {})
+      )
     ),
   });
 
@@ -52,7 +51,7 @@ export const TableSearch = ({ onSubmitTable, loading }: TableSearchProps) => {
       if (!query[1]) return;
 
       queries.push({
-        field: !isFormatedUpperQueries ? camelToSnake(query[0]) : query[0],
+        field: query[0],
         text: query[1],
       });
     });
@@ -88,8 +87,6 @@ export const TableSearch = ({ onSubmitTable, loading }: TableSearchProps) => {
         ) : (
           <div></div>
         )}
-
-        
 
         <div className="w-fit flex flex-col gap-y-2">
           <Button
