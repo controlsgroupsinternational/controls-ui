@@ -243,7 +243,7 @@ export function newFiltersBasedInUrlSearch(
           return {
             ...option,
             // Marcamos como seleccionado si el valor de la opción está en las opciones de la URL
-            selected: selectedOptionsFromUrl.includes(option.value),
+            selected: selectedOptionsFromUrl.includes(`${option.value}`),
           };
         }),
       };
