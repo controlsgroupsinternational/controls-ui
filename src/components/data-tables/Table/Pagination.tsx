@@ -40,7 +40,7 @@ export function TablePagination() {
               updateLimit(Number(value), 1);
             }}
           >
-            <SelectTrigger className="h-8 w-[70px] bg-white">
+            <SelectTrigger className="h-8 w-[70px]">
               <SelectValue placeholder={pagination.limit} />
             </SelectTrigger>
 
@@ -73,7 +73,9 @@ export function TablePagination() {
           <div>
             <p className="text-sm font-medium">
               Página {pagination.page}{" "}
-              {`${pagination?.pagesCount ? `de ${pagination?.pagesCount}` : ``}`}
+              {`${
+                pagination?.pagesCount ? `de ${pagination?.pagesCount}` : ``
+              }`}
             </p>
           </div>
 
