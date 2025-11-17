@@ -52,7 +52,7 @@ const TableBodyRow = ({
 }: TableBodyRowProps) => {
   const renderCell = (
     column: ITableColumn<any>,
-    item: Record<string, string>,
+    item: Record<string, string>
   ) => {
     //=========== Refactor this after
     const verficationOfItems = () => {
@@ -64,13 +64,13 @@ const TableBodyRow = ({
       if (isSelected) {
         // If already selected, unmark it and remove it from the array
         const updatedItems = multiItemsSelected.filter(
-          (selectedItem) => selectedItem.id !== item.id,
+          (selectedItem) => selectedItem.id !== item.id
         );
         setMultiItemsSelected(updatedItems);
         setItemsSelectedCount(itemsSelectedCount - 1);
 
         if (isSelectedAllItems) {
-          onSelectAllItems(false, true);
+          onSelectAllItems && onSelectAllItems(false, true);
         }
       } else {
         // If not selected and not reached the limit, mark it and add it to the array
@@ -111,7 +111,7 @@ const TableBodyRow = ({
           checked={
             multiItemsSelected
               ? multiItemsSelected.some(
-                  (selectedItem) => selectedItem.id === item.id,
+                  (selectedItem) => selectedItem.id === item.id
                 )
               : false
           }
@@ -152,7 +152,7 @@ export const TableBody = () => {
     onSelectAllItems,
   } = useContext(TableContext);
   const [itemsSelectedCount, setItemsSelectedCount] = useState<number>(
-    multiItemsSelected ? multiItemsSelected.length : 0,
+    multiItemsSelected ? multiItemsSelected.length : 0
   );
 
   return (
