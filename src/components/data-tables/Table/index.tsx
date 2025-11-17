@@ -365,7 +365,7 @@ export function Table<DataSchema>(props: CustomTableProps<DataSchema>) {
         setSelectItem: props?.setSelectItem,
         setShowFilters: (value) => setShowFilters(value),
         setSearchForm: (searchForm) => setSearchForm(searchForm),
-        onSelectAllItems: handleOnSelectAllItems,
+        onSelectAllItems: props?.onSelectAllItems && handleOnSelectAllItems,
         isSelectedAllItems,
         setIsMultiSelect,
         isMultiSelect,
